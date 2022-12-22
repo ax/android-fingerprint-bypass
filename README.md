@@ -8,6 +8,12 @@ This script will bypass authentication when the crypto object is not used. The a
 
 It should work with any Android version.
 
+## Usage
+
+```
+$ frida --codeshare ax/universal-android-biometric-bypass -f YOUR_BINARY
+```
+
 ## References 
 
 https://labs.withsecure.com/publications/how-secure-is-your-android-keystore-authentication
