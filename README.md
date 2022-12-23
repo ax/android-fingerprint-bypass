@@ -13,7 +13,12 @@ It should work with any Android version.
 ```
 $ frida --codeshare ax/universal-android-biometric-bypass -f YOUR_BINARY
 ```
-
+```
+frida -U -f YOUR_BINARY --no-pause -l fingerprint-bypass.js
+```
+```
+frida -U -F YOUR_BINARY --no-pause -l fingerprint-bypass.js
+```
 ## References 
 
 https://labs.withsecure.com/publications/how-secure-is-your-android-keystore-authentication
