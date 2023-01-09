@@ -22,6 +22,8 @@ frida -U -F YOUR_BINARY --no-pause -l fingerprint-bypass.js
 When using frida gadget with the `script` interaction type, add the following code to print to logcat the console.log output.
 
 ```js
+// print to logcat the console.log output
+// see: https://github.com/frida/frida/issues/382
 var android_log_write = new NativeFunction(
     Module.getExportByName(null, '__android_log_write'),
     'int',
